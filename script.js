@@ -1,106 +1,119 @@
-let questionURL = 'https://opentdb.com/api_config.php';
-
-        // Game variables
-        let level = 1;
-        let questionCount = 0;
+const PEXELS_API_KEY = 'b7BNU08kvp8NLPcOdymXHfoiCuXMIF6nNaYnZNtYIzjoWERPQglJ5w8z';
 
 
-        // Check if answer is correct
-        function checkAnswer(button, rightAnswer) {
-            // Disable all buttons
-            let buttons = document.querySelectorAll('#answers button');
-            buttons.forEach(btn => {
-                btn.disabled = true;
-               
-                // Show right and wrong answers
-                if(btn.innerHTML === rightAnswer) {
-                    btn.style.backgroundColor = '#2ecc71';  // Nicer green
-                } else {
-                    btn.style.backgroundColor = '#e74c3c';  // Nicer red
-                }
-            });
+let level = 1;
+let questionCount = 0;
+
+// handle install prompt
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  const installButton = document.getElementById('installButton');
+  installButton.style.display = 'block';
+
+  installButton.addEventListener('click', () => {
+    installButton.style.display = 'none';
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      } else {
+        console.log('User dismissed the install prompt');
+      }
+      deferredPrompt = null;
+    });
+  });
+});  
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('sw.js').then(function(registration) {
+        console.log('Service Worker registered with scope:', registration.scope);
+      }, function(error) {
+        console.log('Service Worker registration failed:', error);
+      });
+    });
+  }        
+
+function checkAnswer(button, rightAnswer) {
+    const buttons = document.querySelectorAll('#answers button');
+    buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.backgroundColor = btn.innerHTML === rightAnswer ? '#2ecc71' : '#e74c3c';
+    });
 
 
-            if(button.innerHTML === rightAnswer) {
-                if(questionCount % 10 === 9) {
-                    level++;
-                    alert('You beat the challenge! Level ' + level);
-                }
-                questionCount++;
-            } else {
-                if(questionCount % 10 === 9) {
-                    alert('Challenge failed! Try again!');
-                    questionCount = (level - 1) * 10;
-                }
-            }
-
-
-            // Update info
-            document.getElementById('level').innerHTML = level;
-            document.getElementById('until-challenge').innerHTML = 10 - (questionCount % 10);
-           
-            // Show next button
-            document.getElementById('next-btn').style.display = 'block';
+    if (button.innerHTML === rightAnswer) {
+        if (questionCount % 10 === 9) {
+            level++;
+            alert(`Level ${level}`);
         }
+        questionCount++;
+    } else {
+        if (questionCount % 10 === 9) {
+            alert('Challenge failed!');
+            questionCount = (level - 1) * 10;
+        }
+    }
 
 
-        // Get new question
-        async function getQuestion() {
-            // Check if it's challenge question
-            let isChallenge = (questionCount % 10 === 9);
-            let difficulty = isChallenge ? 'hard' : 'easy';
+    document.getElementById('level').innerHTML = level;
+    document.getElementById('until-challenge').innerHTML = 10 - (questionCount % 10);
+    document.getElementById('next-btn').style.display = 'block';
+}
 
 
-            // Hide next button
-            document.getElementById('next-btn').style.display = 'none';
+async function getQuestion() {
+    try {
+        const isChallenge = (questionCount % 10 === 9);
+        const difficulty = isChallenge ? 'hard' : 'easy';
 
 
-            // Get question from API
-            let response = await fetch('https://opentdb.com/api.php?amount=1&difficulty=' + difficulty);
-            let data = await response.json();
-            let question = data.results[0];
+        document.getElementById('next-btn').style.display = 'none';
 
 
-            // Get image
-            let imageResponse = await fetch("https://api.pexels.com/v1/search?per_page=1&query=" + question.category, {
-                headers: {
-                    "Authorization": "b7BNU08kvp8NLPcOdymXHfoiCuXMIF6nNaYnZNtYIzjoWERPQglJ5w8z"
-                }
+        const response = await fetch(`https://opentdb.com/api.php?amount=1&difficulty=${difficulty}`);
+        const data = await response.json();
+        const question = data.results[0];
+
+
+        document.getElementById('category').innerHTML =
+            isChallenge ? `CHALLENGE: ${question.category}` : question.category;
+        document.getElementById('question').innerHTML = question.question;
+
+
+        try {
+            const imageResponse = await fetch(`https://api.pexels.com/v1/search?per_page=1&query=${encodeURIComponent(question.category)}`, {
+                headers: { "Authorization": PEXELS_API_KEY }
             });
-            let imageData = await imageResponse.json();
-
-
-            // Show category
-            document.getElementById('category').innerHTML =
-                isChallenge ? "CHALLENGE QUESTION! - " + question.category : question.category;
-
-
-            // Show question
-            document.getElementById('question').innerHTML = question.question;
-
-
-            // Show image
-            if(imageData.photos && imageData.photos.length > 0) {
+            const imageData = await imageResponse.json();
+            if (imageData.photos && imageData.photos.length) {
                 document.getElementById('question-image').src = imageData.photos[0].src.medium;
+                document.getElementById('question-image').style.display = 'block';
+            } else {
+                document.getElementById('question-image').style.display = 'none';
             }
-
-
-            // Mix up answers
-            let answers = [...question.incorrect_answers, question.correct_answer];
-            for(let i = answers.length - 1; i > 0; i--) {
-                let j = Math.floor(Math.random() * (i + 1));
-                [answers[i], answers[j]] = [answers[j], answers[i]];
-            }
-
-
-            // Show answer buttons
-            let buttonClass = isChallenge ? 'hard-question' : 'normal-question';
-            document.getElementById('answers').innerHTML = answers.map(answer =>
-                `<button class="${buttonClass}" onclick="checkAnswer(this, '${question.correct_answer}')">${answer}</button>`
-            ).join('');
+        } catch {
+            document.getElementById('question-image').style.display = 'none';
         }
 
 
-        // Start game
-        getQuestion();
-        
+        const answers = [...question.incorrect_answers, question.correct_answer];
+        answers.sort(() => Math.random() - 0.5);
+
+
+        const buttonClass = isChallenge ? 'hard-question' : 'normal-question';
+        document.getElementById('answers').innerHTML = answers.map(answer =>
+            `<button class="${buttonClass}" onclick="checkAnswer(this, '${answer}')">${answer}</button>`
+        ).join('');
+    } catch (error) {
+        console.error('Question fetch error:', error);
+        alert('Failed to load question');
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', getQuestion);
