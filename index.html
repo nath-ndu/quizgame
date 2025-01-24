@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trivia Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="style.css">  
+      <link rel="manifest" href="manifest.json">
+    
+      <script src="myscript.js"></script>
+</head>
+<body>
+    <h1>TRIVIA GAME</h1>
+   
+    <div id="game-box">
+        <div id="level-info">
+            Level: <span id="level">1</span>
+            <br>
+            Questions until challenge: <span id="until-challenge">10</span>
+        </div>
+
+
+        <h2 id="category"></h2>
+        <img id="question-image">
+        <p id="question"></p>
+        <div id="answers"></div>
+        <button id="next-btn" onclick="getQuestion()">Next Question</button>
+    </div>
+
+
+</body>
+</html>
+
