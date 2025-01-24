@@ -1,42 +1,45 @@
 {
-    "theme_color":"#8936FF",
-    "background_color":"#2EC6FE",
-    "icons":[
-       {
-          "purpose":"maskable",
-          "sizes":"512x512",
-          "src":"icons/icon512_maskable.png",
-          "type":"image/png"
-       },
-       {
-          "purpose":"any",
-          "sizes":"512x512",
-          "src":"icons/icon512_rounded.png",
-          "type":"image/png"
-       }
-    ],
-    "screenshots": [
-    {
-      "src": "screenshots/screenshot1.png",
-      "sizes": "1280x840",
-      "type": "image/png",
-      "form_factor": "wide",
-      "purpose": "any"
-    },
-    {
-      "src": "screenshots/screenshot2.png",
-      "sizes": "711x1040",
-      "type": "image/png",
-      "purpose": "any"
-    }
- 
+   "theme_color":"#8936FF",
+   "background_color":"#2EC6FE",
+   "icons":[
+      {
+         "purpose":"maskable",
+         "sizes":"512x512",
+         "src":"icons/icon512_maskable.png",
+         "type":"image/png"
+      },
+      {
+         "purpose":"any",
+         "sizes":"512x512",
+         "src":"icons/icon512_rounded.png",
+         "type":"image/png"
+      }
    ],
+   "screenshots": [
+   {
+     "src": "screenshots/screenshot1.png",
+     "sizes": "1280x840",
+     "type": "image/png",
+     "form_factor": "wide",
+     "purpose": "any"
+   },
+   {
+     "src": "screenshots/screenshot2.png",
+     "sizes": "711x1040",
+     "type": "image/png",
+     "purpose": "any"
+   }
 
-   "start_url": "/",
-    "orientation":"any",
-    "display":"standalone",
-    "dir":"auto",
-    "lang":"en-US",
-    "name":"Trivia Level Game",
-    "short_name":"TLG"
- }
+  ],
+
+
+
+
+  "start_url": "/",
+   "orientation":"any",
+   "display":"standalone",
+   "dir":"auto",
+   "lang":"en-US",
+   "name":"Trivia Level Game",
+   "short_name":"TLG"
+}
