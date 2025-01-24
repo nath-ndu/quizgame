@@ -1,13 +1,17 @@
-const CACHE_NAME = 'my-app-cache-v1';
-const DYNAMIC_CACHE_NAME = 'my-app-dynamic-cache-v1';
+const CACHE_NAME = 'my-app-cache-v2';
+const DYNAMIC_CACHE_NAME = 'my-app-dynamic-cache-v2';
+
+
+
 
 const STATIC_ASSETS = [
-  '/', 
-  '/index.html',
-  '/styles.css',
-  '/app.js',
-  '/favicon.ico',
+  'index.html',
+  'style.css',
+  'script.js',
 ];
+
+
+
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -17,6 +21,9 @@ self.addEventListener('install', event => {
     })
   );
 });
+
+
+
 
 self.addEventListener('activate', event => {
   event.waitUntil(
@@ -32,6 +39,9 @@ self.addEventListener('activate', event => {
     })
   );
 });
+
+
+
 
 self.addEventListener('fetch', event => {
   event.respondWith(
